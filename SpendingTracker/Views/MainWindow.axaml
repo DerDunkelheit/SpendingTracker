@@ -1,0 +1,89 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SpendingTracker.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:SpendingTracker.TemplatedControls"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
+        MinWidth="600" MinHeight="450"
+        Width="600" Height="450"
+        x:Class="SpendingTracker.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="SpendingTracker">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    
+        <Grid ColumnDefinitions="*, *" ShowGridLines="True">
+            <!-- Left Column -->
+            <Border Grid.Column="0" Padding="10">
+                <Grid RowDefinitions="Auto, *, Auto" ShowGridLines="False">
+                    <StackPanel Grid.Row="0">
+                        <TextBox Text="{Binding SpendingTextBoxText, Mode=TwoWay}"
+                                 Name="SpendingTextBox" 
+                                 Margin="0, 0, 0, 10" 
+                                 Watermark="Enter Spending..."></TextBox>
+                        
+                        <Button Content="Add Spending"
+                                Command="{Binding AddSpendingCommand}"
+                                HorizontalAlignment="Center"></Button>
+                    </StackPanel>
+                    
+                    
+                    
+                    <StackPanel Grid.Row="2">
+                        <Grid ColumnDefinitions="*,*">
+                            <Button Grid.Column="0" 
+                                    Content="Remove last day" 
+                                    Command="{Binding RemoveLastDayCommand}" 
+                                    Background="darkred" 
+                                    Foreground="white" 
+                                    HorizontalAlignment="Stretch" 
+                                    HorizontalContentAlignment="Center"></Button>
+                        </Grid>
+                        <Button Content="Add new Day" 
+                                Command="{Binding AddNewDayCommand}" 
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"></Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            <!-- Right Column -->
+            <Border Grid.Column="1" Padding="10">
+                <Grid RowDefinitions="Auto, Auto, *" ShowGridLines="False">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock HorizontalAlignment="Center" 
+                                   FontWeight="Bold" 
+                                   Margin="0, 0, 5, 0">Current day:</TextBlock>
+                        
+                        <TextBlock Text="{Binding TotalDays.Count}"></TextBlock>
+                    </StackPanel>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal">
+                        <TextBlock HorizontalAlignment="Center" 
+                                   Margin="0, 0, 5, 0">Budget: </TextBlock>
+     
+                        <TextBlock Text="{Binding CurrentBudget}"></TextBlock>
+                    </StackPanel>
+                    <ScrollViewer Grid.Row="2" Margin="0, 12, 0, 12">
+                        <ItemsControl Items="{Binding TotalDays}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <controls:ToggleLabelControl 
+                                        IsElementChecked="{Binding !IsBudgetExceeded}"
+                                        LabelText="Left Budget: "
+                                        LabelSecondText="{Binding Budget}"></controls:ToggleLabelControl>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+            
+        </Grid>
+
+</Window>
+

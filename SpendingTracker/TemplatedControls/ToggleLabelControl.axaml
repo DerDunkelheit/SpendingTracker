@@ -1,0 +1,22 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:SpendingTracker.TemplatedControls">
+    <Design.PreviewWith>
+        <controls:ToggleLabelControl />
+    </Design.PreviewWith>
+
+    <Style Selector="controls|ToggleLabelControl">
+        <!-- Set Defaults -->
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Padding="5" Background="{TemplateBinding Background}">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox IsChecked="{TemplateBinding IsElementChecked}" IsEnabled="False"></CheckBox>
+                        <TextBlock Text="{TemplateBinding LabelText}" VerticalAlignment="Center" Margin="0, 0, 5, 0"></TextBlock>
+                        <TextBlock Text="{TemplateBinding LabelSecondText}" VerticalAlignment="Center"></TextBlock>
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>
