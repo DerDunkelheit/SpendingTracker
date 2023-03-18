@@ -76,6 +76,8 @@ public partial class MainWindowViewModel : ViewModelBase
         CurrentDay.Budget += valueToAdd;
         CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
 
+    TotalDays[TotalDays.Count - 1] = currentDay;
+
         UpdateCurrentBudget();
 
         Save();
