@@ -15,7 +15,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private SpendingDay currentDay;
     [ObservableProperty]
-    private float currentBudget = 0;
+    private decimal currentBudget = 0;
 
     private ObservableCollection<SpendingDay> totalDays = new ObservableCollection<SpendingDay>();
 
@@ -46,7 +46,7 @@ Load();
 
 private void AddSpendingCommand()
 {
-if (float.TryParse(SpendingTextBoxText, out float spendingInput))
+if (decimal.TryParse(SpendingTextBoxText, out decimal spendingInput))
 {
 AddSpendingTransaction(spendingInput);
 }
@@ -62,8 +62,8 @@ private void RemoveLastSpendingCommand()
 if (CurrentDay.AllTransactions.Count > 0)
 {
 var lastTransaction = CurrentDay.AllTransactions.Last();
-float lastTransactionSpent = lastTransaction.SpentValue;
-float valueToRestore = lastTransactionSpent * -1;
+decimal lastTransactionSpent = lastTransaction.SpentValue;
+decimal valueToRestore = lastTransactionSpent * -1;
 
 CurrentDay.AllTransactions.Remove(lastTransaction);
 UpdateCurrentDayBudget(valueToRestore);
@@ -102,7 +102,7 @@ messageBoxStandardWindow.Show();
 }
 }
 
-private void AddSpendingTransaction(float valueToAdd)
+private void AddSpendingTransaction(decimal valueToAdd)
 {
 CurrentDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
 UpdateCurrentDayBudget(valueToAdd);
@@ -112,7 +112,7 @@ UpdateCurrentBudget();
 Save();
 }
 
-private void UpdateCurrentDayBudget(float valueToAdd)
+private void UpdateCurrentDayBudget(decimal valueToAdd)
 {
 CurrentDay.Budget += valueToAdd;
 CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;

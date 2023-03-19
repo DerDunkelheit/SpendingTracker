@@ -11,5 +11,5 @@ public partial class SpendingDay : ObservableObject
     private bool isBudgetExceeded = false;
     
     [ObservableProperty]
-    private float budget = 0;
+    private decimal budget = 0;
 }

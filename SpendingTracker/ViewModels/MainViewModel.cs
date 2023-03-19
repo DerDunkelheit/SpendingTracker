@@ -20,7 +20,7 @@ namespace SpendingTracker.ViewModels
         [ObservableProperty]
         private SpendingDay selectedDay;
         [ObservableProperty]
-        private float currentBudget = 0;
+        private decimal currentBudget = 0;
 
         private ObservableCollection<SpendingDay> totalDays = new ObservableCollection<SpendingDay>();
 
@@ -46,7 +46,7 @@ namespace SpendingTracker.ViewModels
         [RelayCommand]
         private void AddSpending()
         {
-        if (float.TryParse(SpendingTextBoxText, out float spendingInput))
+        if (decimal.TryParse(SpendingTextBoxText, out decimal spendingInput))
         {
         AddSpendingTransaction(spendingInput);
         }
@@ -63,8 +63,8 @@ namespace SpendingTracker.ViewModels
         if (SelectedDay.AllTransactions.Count > 0)
         {
         var lastTransaction = SelectedDay.AllTransactions.Last();
-        float lastTransactionSpent = lastTransaction.SpentValue;
-        float valueToRestore = lastTransactionSpent * -1;
+        decimal lastTransactionSpent = lastTransaction.SpentValue;
+        decimal valueToRestore = lastTransactionSpent * -1;
 
         SelectedDay.AllTransactions.Remove(lastTransaction);
         UpdateCurrentDayBudget(valueToRestore);
@@ -105,7 +105,7 @@ namespace SpendingTracker.ViewModels
         }
         }
 
-        private void AddSpendingTransaction(float valueToAdd)
+        private void AddSpendingTransaction(decimal valueToAdd)
         {
         SelectedDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
         UpdateCurrentDayBudget(valueToAdd);
@@ -116,7 +116,7 @@ namespace SpendingTracker.ViewModels
         }
 
        
-        private void UpdateCurrentDayBudget(float valueToAdd)
+        private void UpdateCurrentDayBudget(decimal valueToAdd)
         {
         SelectedDay.Budget += valueToAdd;
         SelectedDay.IsBudgetExceeded = SelectedDay.Budget < 0;
