@@ -38,11 +38,32 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         if (float.TryParse(SpendingTextBoxText, out float spendingInput))
         {
-            UpdateCurrentBudget(spendingInput);
+            AddSpendingTransaction(spendingInput);
         }
         else
         {
             var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Assertion", "Invalid or Empty Input, only numbers are allowed");
+            messageBoxStandardWindow.Show();
+        }
+    }
+
+    private void RemoveLastSpendingCommand()
+    {
+        if (CurrentDay.AllTransactions.Count > 0)
+        {
+            var lastTransaction = CurrentDay.AllTransactions.Last();
+            float lastTransactionSpent = lastTransaction.SpentValue;
+            float valueToRestore = lastTransactionSpent * -1;
+
+            CurrentDay.AllTransactions.Remove(lastTransaction);
+            UpdateCurrentDayBudget(valueToRestore);
+            UpdateCurrentBudget();
+            
+            Save();
+        }
+        else
+        {
+            var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Assertion", "You haven't made any spending yet");
             messageBoxStandardWindow.Show();
         }
     }
@@ -71,21 +92,27 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private void UpdateCurrentBudget(float valueToAdd)
+    private void AddSpendingTransaction(float valueToAdd)
     {
-        CurrentDay.Budget += valueToAdd;
-        CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
-
-    TotalDays[TotalDays.Count - 1] = currentDay;
+        CurrentDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
+        UpdateCurrentDayBudget(valueToAdd);
 
         UpdateCurrentBudget();
 
         Save();
     }
 
+    private void UpdateCurrentDayBudget(float valueToAdd)
+    {
+        CurrentDay.Budget += valueToAdd;
+        CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
+    }
+
     private void IncreaseDayNumber()
     {
-        TotalDays.Add(new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET });
+        SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET };
+
+        TotalDays.Add(newDay);
         CurrentDay = TotalDays.Last();
 
         UpdateCurrentBudget();

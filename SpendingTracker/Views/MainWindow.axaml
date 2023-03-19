@@ -30,6 +30,11 @@
                         <Button Content="Add Spending"
                                 Command="{Binding AddSpendingCommand}"
                                 HorizontalAlignment="Center"></Button>
+                        <Button Content="Remove last Spending"
+                                Command="{Binding RemoveLastSpendingCommand}"
+                                HorizontalAlignment="Center"
+                                Background="darkred"
+                                Foreground="white" ></Button> <!-- TODO: create styles for buttons -->
                     </StackPanel>
                     
                     
