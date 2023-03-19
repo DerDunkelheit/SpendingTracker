@@ -17,7 +17,7 @@ namespace SpendingTracker.ViewModels
         [ObservableProperty]
         private string spendingTextBoxText = string.Empty;
         [ObservableProperty]
-        private SpendingDay currentDay;
+        private SpendingDay selectedDay;
         [ObservableProperty]
         private float currentBudget = 0;
 
@@ -33,7 +33,7 @@ namespace SpendingTracker.ViewModels
 
 
 
-        private readonly string SAVE_FILE_NAME = "save.json";
+       
 
 
         public MainViewModel()
@@ -64,13 +64,13 @@ namespace SpendingTracker.ViewModels
 
         private void RemoveLastSpendingCommand()
         {
-        if (CurrentDay.AllTransactions.Count > 0)
+        if (SelectedDay.AllTransactions.Count > 0)
         {
-        var lastTransaction = CurrentDay.AllTransactions.Last();
+        var lastTransaction = SelectedDay.AllTransactions.Last();
         float lastTransactionSpent = lastTransaction.SpentValue;
         float valueToRestore = lastTransactionSpent * -1;
 
-        CurrentDay.AllTransactions.Remove(lastTransaction);
+        SelectedDay.AllTransactions.Remove(lastTransaction);
         UpdateCurrentDayBudget(valueToRestore);
         UpdateCurrentBudget();
 
@@ -93,7 +93,7 @@ namespace SpendingTracker.ViewModels
         if (TotalDays.Count > 1)
         {
         TotalDays.RemoveAt(TotalDays.Count - 1);
-        CurrentDay = TotalDays.Last();
+        SelectedDay = TotalDays.Last();
 
         UpdateCurrentBudget();
 
@@ -109,7 +109,7 @@ namespace SpendingTracker.ViewModels
 
         private void AddSpendingTransaction(float valueToAdd)
         {
-        CurrentDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
+        SelectedDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
         UpdateCurrentDayBudget(valueToAdd);
 
         UpdateCurrentBudget();
@@ -119,8 +119,8 @@ namespace SpendingTracker.ViewModels
 
         private void UpdateCurrentDayBudget(float valueToAdd)
         {
-        CurrentDay.Budget += valueToAdd;
-        CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
+        SelectedDay.Budget += valueToAdd;
+        SelectedDay.IsBudgetExceeded = SelectedDay.Budget < 0;
         }
 
         private void IncreaseDayNumber()
@@ -128,7 +128,7 @@ namespace SpendingTracker.ViewModels
         SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET };
 
         TotalDays.Add(newDay);
-        CurrentDay = TotalDays.Last();
+        SelectedDay = TotalDays.Last();
 
         UpdateCurrentBudget();
 
