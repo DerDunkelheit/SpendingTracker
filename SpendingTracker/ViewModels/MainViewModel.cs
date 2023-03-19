@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json;
 using SpendingTracker.DataAccess;
 using SpendingTracker.Managers;
@@ -29,27 +30,21 @@ namespace SpendingTracker.ViewModels
             set => SetProperty(ref totalDays, value);
         }
 
-
-
-
-
-       
-
-
         public MainViewModel()
         {
         var td = Db.GetCollectionFromJsonFile<SpendingDay>();
 
         if (td.Count == 0)
         {
-        AddNewDayCommand();
+        AddNewDay();
         }
 
         TotalDays = td;
 
         }
 
-        private void AddSpendingCommand()
+        [RelayCommand]
+        private void AddSpending()
         {
         if (float.TryParse(SpendingTextBoxText, out float spendingInput))
         {
@@ -62,7 +57,8 @@ namespace SpendingTracker.ViewModels
         }
         }
 
-        private void RemoveLastSpendingCommand()
+        [RelayCommand]
+        private void RemoveLastSpending()
         {
         if (SelectedDay.AllTransactions.Count > 0)
         {
@@ -83,12 +79,14 @@ namespace SpendingTracker.ViewModels
         }
         }
 
-        private void AddNewDayCommand()
+        [RelayCommand]
+        private void AddNewDay()
         {
         IncreaseDayNumber();
         }
 
-        private void RemoveLastDayCommand()
+        [RelayCommand]
+        private void RemoveLastDay()
         {
         if (TotalDays.Count > 1)
         {
@@ -117,6 +115,7 @@ namespace SpendingTracker.ViewModels
         Db.SaveCollectionToJsonFile<SpendingDay>(TotalDays);
         }
 
+       
         private void UpdateCurrentDayBudget(float valueToAdd)
         {
         SelectedDay.Budget += valueToAdd;
