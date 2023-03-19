@@ -2,10 +2,86 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:vm="using:SpendingTracker.ViewModels"
+			 xmlns:controls="using:SpendingTracker.TemplatedControls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SpendingTracker.Views.MainView">
+	<Design.DataContext>
+		<vm:MainViewModel></vm:MainViewModel>
+	</Design.DataContext>
 	<Grid>
-		<TextBlock Text="{Binding StusViewModelCheckString}" 
-				   Margin="100"/>
+		<Grid ColumnDefinitions="*, *" ShowGridLines="True">
+			<!-- Left Column -->
+			<Border Grid.Column="0" Padding="10">
+				<Grid RowDefinitions="Auto, *, Auto" ShowGridLines="False">
+					<StackPanel Grid.Row="0">
+						<TextBox Text="{Binding SpendingTextBoxText, Mode=TwoWay}"
+                                 Name="SpendingTextBox"
+                                 Margin="0, 0, 0, 10"
+                                 Watermark="Enter Spending..."></TextBox>
+
+						<Button Content="Add Spending"
+                                Command="{Binding AddSpendingCommand}"
+                                HorizontalAlignment="Center"></Button>
+						<Button Content="Remove last Spending"
+                                Command="{Binding RemoveLastSpendingCommand}"
+                                HorizontalAlignment="Center"
+                                Background="darkred"
+                                Foreground="white" ></Button>
+						<!-- TODO: create styles for buttons -->
+					</StackPanel>
+
+
+
+					<StackPanel Grid.Row="2">
+						<Grid ColumnDefinitions="*,*">
+							<Button Grid.Column="0"
+                                    Content="Remove last day"
+                                    Command="{Binding RemoveLastDayCommand}"
+                                    Background="darkred"
+                                    Foreground="white"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"></Button>
+						</Grid>
+						<Button Content="Add new Day"
+                                Command="{Binding AddNewDayCommand}"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"></Button>
+					</StackPanel>
+				</Grid>
+			</Border>
+
+			<!-- Right Column -->
+			<Border Grid.Column="1" Padding="10">
+				<Grid RowDefinitions="Auto, Auto, *" ShowGridLines="False">
+					<StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
+						<TextBlock HorizontalAlignment="Center"
+                                   FontWeight="Bold"
+                                   Margin="0, 0, 5, 0">Current day:</TextBlock>
+
+						<TextBlock Text="{Binding TotalDays.Count}"></TextBlock>
+					</StackPanel>
+					<StackPanel Grid.Row="1" Orientation="Horizontal">
+						<TextBlock HorizontalAlignment="Center"
+                                   Margin="0, 0, 5, 0">Budget: </TextBlock>
+
+						<TextBlock Text="{Binding CurrentDay.Budget}"></TextBlock>
+					</StackPanel>
+					<ScrollViewer Grid.Row="2" Margin="0, 12, 0, 12">
+						<ItemsControl Items="{Binding TotalDays}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate>
+									<controls:ToggleLabelControl
+                                        IsElementChecked="{Binding !IsBudgetExceeded}"
+                                        LabelText="Left Budget: "
+                                        LabelSecondText="{Binding Budget}"></controls:ToggleLabelControl>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Grid>
+			</Border>
+
+		</Grid>
 	</Grid>
 </UserControl>

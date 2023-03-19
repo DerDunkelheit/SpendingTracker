@@ -22,7 +22,10 @@ namespace SpendingTracker.DataAccess
         /// <summary>
         /// The FullFilePath to Get and Save Collection information
         /// </summary>
-        public static string FullFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Assets\DaysTotals.txt"); 
+        /// 
+        public static string FullFilePath = "save.txt";
+
+        //public static string FullFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"Assets\DaysTotals.txt");
 
         #region Save/Load
 
@@ -39,13 +42,17 @@ namespace SpendingTracker.DataAccess
 
         // If the File exists...
         if (File.Exists(FullFilePath))
-
         {
         // String representing the text from the file
         string json = File.ReadAllText(FullFilePath);
 
-        // Convert the String to an ObservableCollection of T
-        result = JsonConvert.DeserializeObject<ObservableCollection<T>>(json);
+        // If the File exists and has some characters inside the file
+        //     then Deserialize the object... otherwise the result remains 
+        //     as a new Collection
+        if (json.Length > 0)
+
+            // Convert the String to an ObservableCollection of T
+            result = JsonConvert.DeserializeObject<ObservableCollection<T>>(json);
         }
 
         // If the file doesn't exist create a new blank file
