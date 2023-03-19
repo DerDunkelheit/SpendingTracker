@@ -13,135 +13,145 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private string spendingTextBoxText = string.Empty;
     [ObservableProperty]
-    private SpendingDay currentDay = new SpendingDay();
+    private SpendingDay currentDay;
     [ObservableProperty]
     private float currentBudget = 0;
-    
-    public ObservableCollection<SpendingDay> TotalDays { get; set; } = new ObservableCollection<SpendingDay>();
-    
-    private readonly string SAVE_FILE_NAME = "save.json";
 
+    private ObservableCollection<SpendingDay> totalDays = new ObservableCollection<SpendingDay>();
 
-    public MainWindowViewModel()
+    public ObservableCollection<SpendingDay> TotalDays
     {
-        if (!File.Exists(SAVE_FILE_NAME))
-        {
-            IncreaseDayNumber();
-        }
-        else
-        {
-            Load();
-        }
+        get => totalDays;
+        set => SetProperty(ref totalDays, value);
     }
 
-    private void AddSpendingCommand()
-    {
-        if (float.TryParse(SpendingTextBoxText, out float spendingInput))
-        {
-            AddSpendingTransaction(spendingInput);
-        }
-        else
-        {
-            var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Assertion", "Invalid or Empty Input, only numbers are allowed");
-            messageBoxStandardWindow.Show();
-        }
-    }
 
-    private void RemoveLastSpendingCommand()
-    {
-        if (CurrentDay.AllTransactions.Count > 0)
-        {
-            var lastTransaction = CurrentDay.AllTransactions.Last();
-            float lastTransactionSpent = lastTransaction.SpentValue;
-            float valueToRestore = lastTransactionSpent * -1;
 
-            CurrentDay.AllTransactions.Remove(lastTransaction);
-            UpdateCurrentDayBudget(valueToRestore);
-            UpdateCurrentBudget();
-            
-            Save();
-        }
-        else
-        {
-            var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Assertion", "You haven't made any spending yet");
-            messageBoxStandardWindow.Show();
-        }
-    }
 
-    private void AddNewDayCommand()
-    {
-        IncreaseDayNumber();
-    }
 
-    private void RemoveLastDayCommand()
-    {
-        if (TotalDays.Count > 1)
-        {
-            TotalDays.RemoveAt(TotalDays.Count - 1);
-            CurrentDay = TotalDays.Last();
+private readonly string SAVE_FILE_NAME = "save.json";
 
-            UpdateCurrentBudget();
 
-            Save();
-        }
-        else
-        {
-            var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
-                .GetMessageBoxStandardWindow("Assertion", "Cannot remove the first day");
-            messageBoxStandardWindow.Show();
-        }
-    }
+public MainWindowViewModel()
+{
+if (!File.Exists(SAVE_FILE_NAME))
+{
+IncreaseDayNumber();
+}
+else
+{
+Load();
+}
+}
 
-    private void AddSpendingTransaction(float valueToAdd)
-    {
-        CurrentDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
-        UpdateCurrentDayBudget(valueToAdd);
+private void AddSpendingCommand()
+{
+if (float.TryParse(SpendingTextBoxText, out float spendingInput))
+{
+AddSpendingTransaction(spendingInput);
+}
+else
+{
+var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Assertion", "Invalid or Empty Input, only numbers are allowed");
+messageBoxStandardWindow.Show();
+}
+}
 
-        UpdateCurrentBudget();
+private void RemoveLastSpendingCommand()
+{
+if (CurrentDay.AllTransactions.Count > 0)
+{
+var lastTransaction = CurrentDay.AllTransactions.Last();
+float lastTransactionSpent = lastTransaction.SpentValue;
+float valueToRestore = lastTransactionSpent * -1;
 
-        Save();
-    }
+CurrentDay.AllTransactions.Remove(lastTransaction);
+UpdateCurrentDayBudget(valueToRestore);
+UpdateCurrentBudget();
 
-    private void UpdateCurrentDayBudget(float valueToAdd)
-    {
-        CurrentDay.Budget += valueToAdd;
-        CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
-    }
+Save();
+}
+else
+{
+var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager.GetMessageBoxStandardWindow("Assertion", "You haven't made any spending yet");
+messageBoxStandardWindow.Show();
+}
+}
 
-    private void IncreaseDayNumber()
-    {
-        SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET };
+private void AddNewDayCommand()
+{
+IncreaseDayNumber();
+}
 
-        TotalDays.Add(newDay);
-        CurrentDay = TotalDays.Last();
+private void RemoveLastDayCommand()
+{
+if (TotalDays.Count > 1)
+{
+TotalDays.RemoveAt(TotalDays.Count - 1);
+CurrentDay = TotalDays.Last();
 
-        UpdateCurrentBudget();
+UpdateCurrentBudget();
 
-        Save();
-    }
+Save();
+}
+else
+{
+var messageBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
+    .GetMessageBoxStandardWindow("Assertion", "Cannot remove the first day");
+messageBoxStandardWindow.Show();
+}
+}
 
-    private void UpdateCurrentBudget()
-    {
-        //TODO: come up with improvements with MVVM design to remove this method.
-        CurrentBudget = TotalDays.Sum(day => day.Budget);
-    }
+private void AddSpendingTransaction(float valueToAdd)
+{
+CurrentDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
+UpdateCurrentDayBudget(valueToAdd);
 
-    #region Save/Load
-    
-    private void Save()
-    {
-        string json = JsonConvert.SerializeObject(TotalDays);
-        File.WriteAllText(SAVE_FILE_NAME, json);
-    }
-    
-    private void Load()
-    {
-        string json = File.ReadAllText(SAVE_FILE_NAME);
-        TotalDays = JsonConvert.DeserializeObject<ObservableCollection<SpendingDay>>(json);
-        CurrentDay = TotalDays.Last();
+UpdateCurrentBudget();
 
-        UpdateCurrentBudget();
-    }
+Save();
+}
+
+private void UpdateCurrentDayBudget(float valueToAdd)
+{
+CurrentDay.Budget += valueToAdd;
+CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
+}
+
+private void IncreaseDayNumber()
+{
+SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET };
+
+TotalDays.Add(newDay);
+CurrentDay = TotalDays.Last();
+
+UpdateCurrentBudget();
+
+Save();
+}
+
+private void UpdateCurrentBudget()
+{
+//TODO: come up with improvements with MVVM design to remove this method.
+CurrentBudget = TotalDays.Sum(day => day.Budget);
+}
+
+#region Save/Load
+
+private void Save()
+{
+string json = JsonConvert.SerializeObject(TotalDays);
+File.WriteAllText(SAVE_FILE_NAME, json);
+}
+
+private void Load()
+{
+string json = File.ReadAllText(SAVE_FILE_NAME);
+TotalDays = JsonConvert.DeserializeObject<ObservableCollection<SpendingDay>>(json);
+CurrentDay = TotalDays.Last();
+
+UpdateCurrentBudget();
+}
     
     #endregion
 }
