@@ -15,6 +15,9 @@ namespace SpendingTracker.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
+
+        #region Public Properties
+
         /// <summary>
         /// The Text shown in the Textbox to enter spending amount
         /// </summary>
@@ -27,28 +30,46 @@ namespace SpendingTracker.ViewModels
         [ObservableProperty]
         private Day selectedDay;
 
-
-        [ObservableProperty]
-        private decimal currentBudget = 0;
-
+        /// <summary>
+        /// Collection of Day Statistics
+        /// </summary>
         private ObservableCollection<Day> days = new ObservableCollection<Day>();
-
         public ObservableCollection<Day> Days
         {
             get => days;
             set => SetProperty(ref days, value);
         }
 
+
+        #endregion
+
+
         public MainViewModel()
         {
-        var td = Db.GetCollectionFromJsonFile<Day>();
+        var useDummyDbData = true;
+
+        var td = new ObservableCollection<Day>();
+
+        if (useDummyDbData)
+        {
+        td = DummyDb.GetCollectionFromDummyDb();
+        }
+        else
+        td = Db.GetCollectionFromJsonFile<Day>();
 
         if (td.Count == 0)
         {
-        AddNewDay();
+        Days.Add(new Day
+        {
+            Id = Days.Count + 1,
+            DailyBudget = DayManager.DAY_INITIAL_BUDGET,
+            IsBudgetExceeded = false,
+            Transactions = new ObservableCollection<Transaction>() { new Transaction() { Amount = 30 } },
+        });
         }
+        else Days = td;
 
-       
+       SelectedDay = Days[0];
 
         }
 
@@ -69,13 +90,13 @@ namespace SpendingTracker.ViewModels
         [RelayCommand]
         private void RemoveLastSpending()
         {
-        if (SelectedDay.AllTransactions.Count > 0)
+        if (SelectedDay.Transactions.Count > 0)
         {
-        var lastTransaction = SelectedDay.AllTransactions.Last();
-        decimal lastTransactionSpent = lastTransaction.SpentValue;
+        var lastTransaction = SelectedDay.Transactions.Last();
+        decimal lastTransactionSpent = lastTransaction.Amount;
         decimal valueToRestore = lastTransactionSpent * -1;
 
-        SelectedDay.AllTransactions.Remove(lastTransaction);
+        SelectedDay.Transactions.Remove(lastTransaction);
         UpdateCurrentDayBudget(valueToRestore);
         UpdateCurrentBudget();
 
@@ -116,7 +137,7 @@ namespace SpendingTracker.ViewModels
 
         private void AddSpendingTransaction(decimal valueToAdd)
         {
-        SelectedDay.AllTransactions.Add(new Transaction { SpentValue = valueToAdd });
+        SelectedDay.Transactions.Add(new Transaction { Amount = valueToAdd });
         UpdateCurrentDayBudget(valueToAdd);
 
         UpdateCurrentBudget();
@@ -124,16 +145,16 @@ namespace SpendingTracker.ViewModels
         Db.SaveCollectionToJsonFile<Day>(Days);
         }
 
-       
+
         private void UpdateCurrentDayBudget(decimal valueToAdd)
         {
-        SelectedDay.Budget += valueToAdd;
-        SelectedDay.IsBudgetExceeded = SelectedDay.Budget < 0;
+        SelectedDay.DailyBudget += valueToAdd;
+        SelectedDay.IsBudgetExceeded = SelectedDay.DailyBudget < 0;
         }
 
         private void IncreaseDayNumber()
         {
-        Day newDay = new Day { Budget = DayManager.DAY_INITIAL_BUDGET };
+        Day newDay = new Day { DailyBudget = DayManager.DAY_INITIAL_BUDGET };
 
         Days.Add(newDay);
         SelectedDay = Days.Last();
@@ -146,9 +167,9 @@ namespace SpendingTracker.ViewModels
         private void UpdateCurrentBudget()
         {
         //TODO: come up with improvements with MVVM design to remove this method.
-        SelectedDay.Budget = Days.Sum(day => day.Budget);
+        SelectedDay.DailyBudget = Days.Sum(day => day.DailyBudget);
         }
 
-       
+
     }
 }

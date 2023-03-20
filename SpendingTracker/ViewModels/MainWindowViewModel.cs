@@ -24,12 +24,12 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private decimal currentBudget = 0;
 
-    private ObservableCollection<Day> totalDays = new ObservableCollection<Day>();
+    private ObservableCollection<Day> days = new ObservableCollection<Day>();
 
-    public ObservableCollection<Day> TotalDays
+    public ObservableCollection<Day> Days
     {
-        get => totalDays;
-        set => SetProperty(ref totalDays, value);
+        get => days;
+        set => SetProperty(ref days, value);
     }
 
 
@@ -66,13 +66,13 @@ messageBoxStandardWindow.Show();
 
 private void RemoveLastSpendingCommand()
 {
-if (CurrentDay.AllTransactions.Count > 0)
+if (CurrentDay.Transactions.Count > 0)
 {
-var lastTransaction = CurrentDay.AllTransactions.Last();
-decimal lastTransactionSpent = lastTransaction.SpentValue;
+var lastTransaction = CurrentDay.Transactions.Last();
+decimal lastTransactionSpent = lastTransaction.Amount;
 decimal valueToRestore = lastTransactionSpent * -1;
 
-CurrentDay.AllTransactions.Remove(lastTransaction);
+CurrentDay.Transactions.Remove(lastTransaction);
 UpdateCurrentDayBudget(valueToRestore);
 UpdateCurrentBudget();
 
@@ -92,10 +92,10 @@ IncreaseDayNumber();
 
 private void RemoveLastDayCommand()
 {
-if (TotalDays.Count > 1)
+if (Days.Count > 1)
 {
-TotalDays.RemoveAt(TotalDays.Count - 1);
-CurrentDay = TotalDays.Last();
+Days.RemoveAt(Days.Count - 1);
+CurrentDay = Days.Last();
 
 UpdateCurrentBudget();
 
@@ -111,7 +111,7 @@ messageBoxStandardWindow.Show();
 
 private void AddSpendingTransaction(decimal valueToAdd)
 {
-CurrentDay.AllTransactions.Add(new Transaction { SpentValue = valueToAdd });
+CurrentDay.Transactions.Add(new Transaction { Amount = valueToAdd });
 UpdateCurrentDayBudget(valueToAdd);
 
 UpdateCurrentBudget();
@@ -121,16 +121,16 @@ Save();
 
 private void UpdateCurrentDayBudget(decimal valueToAdd)
 {
-CurrentDay.Budget += valueToAdd;
-CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
+CurrentDay.DailyBudget += valueToAdd;
+CurrentDay.IsBudgetExceeded = CurrentDay.DailyBudget < 0;
 }
 
 private void IncreaseDayNumber()
 {
-Day newDay = new Day { Budget = DayManager.DAY_INITIAL_BUDGET };
+Day newDay = new Day { DailyBudget = DayManager.DAY_INITIAL_BUDGET };
 
-TotalDays.Add(newDay);
-CurrentDay = TotalDays.Last();
+Days.Add(newDay);
+CurrentDay = Days.Last();
 
 UpdateCurrentBudget();
 
@@ -140,22 +140,22 @@ Save();
 private void UpdateCurrentBudget()
 {
 //TODO: come up with improvements with MVVM design to remove this method.
-CurrentBudget = TotalDays.Sum(day => day.Budget);
+CurrentBudget = Days.Sum(day => day.DailyBudget);
 }
 
 #region Save/Load
 
 private void Save()
 {
-string json = JsonConvert.SerializeObject(TotalDays);
+string json = JsonConvert.SerializeObject(Days);
 File.WriteAllText(SAVE_FILE_NAME, json);
 }
 
 private void Load()
 {
 string json = File.ReadAllText(SAVE_FILE_NAME);
-TotalDays = JsonConvert.DeserializeObject<ObservableCollection<Day>>(json);
-CurrentDay = TotalDays.Last();
+Days = JsonConvert.DeserializeObject<ObservableCollection<Day>>(json);
+CurrentDay = Days.Last();
 
 UpdateCurrentBudget();
 }

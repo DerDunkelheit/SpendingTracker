@@ -6,11 +6,20 @@ namespace SpendingTracker.Models;
 
 public class Day 
 {
-    public ObservableCollection<Transaction> AllTransactions { get; set; } = new ObservableCollection<Transaction>();
-    
-    //[ObservableProperty] //TODO: not sure if it's okay to implement ObservableObject in Model class. 
-    public bool IsBudgetExceeded { get; set; } = false;
-    
-    //[ObservableProperty]
-    public decimal Budget { get; set; } = DayManager.DAY_INITIAL_BUDGET;
+    /// <summary>
+    /// Unique Identifier for the Day
+    /// </summary>
+    public int Id { get; set; }
+
+    /// <summary>
+    /// The amount of money added to the available budget amount
+    /// </summary>
+    public decimal DailyBudget { get; set; } 
+
+    public bool IsBudgetExceeded { get; set; }
+
+    /// <summary>
+    /// The individual spending amounts to the day
+    /// </summary>
+    public ObservableCollection<Transaction> Transactions { get; set; }
 }
