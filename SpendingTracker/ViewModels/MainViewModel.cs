@@ -15,31 +15,40 @@ namespace SpendingTracker.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
+        /// <summary>
+        /// The Text shown in the Textbox to enter spending amount
+        /// </summary>
         [ObservableProperty]
         private string spendingTextBoxText = string.Empty;
+
+        /// <summary>
+        /// The currently Selected Day to show Transactions and available budget for
+        /// </summary>
         [ObservableProperty]
-        private SpendingDay selectedDay;
+        private Day selectedDay;
+
+
         [ObservableProperty]
         private decimal currentBudget = 0;
 
-        private ObservableCollection<SpendingDay> totalDays = new ObservableCollection<SpendingDay>();
+        private ObservableCollection<Day> days = new ObservableCollection<Day>();
 
-        public ObservableCollection<SpendingDay> TotalDays
+        public ObservableCollection<Day> Days
         {
-            get => totalDays;
-            set => SetProperty(ref totalDays, value);
+            get => days;
+            set => SetProperty(ref days, value);
         }
 
         public MainViewModel()
         {
-        var td = Db.GetCollectionFromJsonFile<SpendingDay>();
+        var td = Db.GetCollectionFromJsonFile<Day>();
 
         if (td.Count == 0)
         {
         AddNewDay();
         }
 
-        TotalDays = td;
+       
 
         }
 
@@ -70,7 +79,7 @@ namespace SpendingTracker.ViewModels
         UpdateCurrentDayBudget(valueToRestore);
         UpdateCurrentBudget();
 
-        Db.SaveCollectionToJsonFile<SpendingDay>(TotalDays);
+        Db.SaveCollectionToJsonFile<Day>(Days);
         }
         else
         {
@@ -88,14 +97,14 @@ namespace SpendingTracker.ViewModels
         [RelayCommand]
         private void RemoveLastDay()
         {
-        if (TotalDays.Count > 1)
+        if (Days.Count > 1)
         {
-        TotalDays.RemoveAt(TotalDays.Count - 1);
-        SelectedDay = TotalDays.Last();
+        Days.RemoveAt(Days.Count - 1);
+        SelectedDay = Days.Last();
 
         UpdateCurrentBudget();
 
-        Db.SaveCollectionToJsonFile<SpendingDay>(TotalDays);
+        Db.SaveCollectionToJsonFile<Day>(Days);
         }
         else
         {
@@ -107,12 +116,12 @@ namespace SpendingTracker.ViewModels
 
         private void AddSpendingTransaction(decimal valueToAdd)
         {
-        SelectedDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
+        SelectedDay.AllTransactions.Add(new Transaction { SpentValue = valueToAdd });
         UpdateCurrentDayBudget(valueToAdd);
 
         UpdateCurrentBudget();
 
-        Db.SaveCollectionToJsonFile<SpendingDay>(TotalDays);
+        Db.SaveCollectionToJsonFile<Day>(Days);
         }
 
        
@@ -124,20 +133,20 @@ namespace SpendingTracker.ViewModels
 
         private void IncreaseDayNumber()
         {
-        SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET };
+        Day newDay = new Day { Budget = DayManager.DAY_INITIAL_BUDGET };
 
-        TotalDays.Add(newDay);
-        SelectedDay = TotalDays.Last();
+        Days.Add(newDay);
+        SelectedDay = Days.Last();
 
         UpdateCurrentBudget();
 
-        Db.SaveCollectionToJsonFile<SpendingDay>(TotalDays);
+        Db.SaveCollectionToJsonFile<Day>(Days);
         }
 
         private void UpdateCurrentBudget()
         {
         //TODO: come up with improvements with MVVM design to remove this method.
-        CurrentBudget = TotalDays.Sum(day => day.Budget);
+        SelectedDay.Budget = Days.Sum(day => day.Budget);
         }
 
        

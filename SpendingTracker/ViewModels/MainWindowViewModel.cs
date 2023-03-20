@@ -10,16 +10,23 @@ namespace SpendingTracker.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
+    /// <summary>
+    /// The text in the Money Spent textbox
+    /// </summary>
     [ObservableProperty]
     private string spendingTextBoxText = string.Empty;
+
+    /// <summary>
+    /// 
+    /// </summary>
     [ObservableProperty]
-    private SpendingDay currentDay;
+    private Day currentDay;
     [ObservableProperty]
     private decimal currentBudget = 0;
 
-    private ObservableCollection<SpendingDay> totalDays = new ObservableCollection<SpendingDay>();
+    private ObservableCollection<Day> totalDays = new ObservableCollection<Day>();
 
-    public ObservableCollection<SpendingDay> TotalDays
+    public ObservableCollection<Day> TotalDays
     {
         get => totalDays;
         set => SetProperty(ref totalDays, value);
@@ -104,7 +111,7 @@ messageBoxStandardWindow.Show();
 
 private void AddSpendingTransaction(decimal valueToAdd)
 {
-CurrentDay.AllTransactions.Add(new SpendingTransaction { SpentValue = valueToAdd });
+CurrentDay.AllTransactions.Add(new Transaction { SpentValue = valueToAdd });
 UpdateCurrentDayBudget(valueToAdd);
 
 UpdateCurrentBudget();
@@ -120,7 +127,7 @@ CurrentDay.IsBudgetExceeded = CurrentDay.Budget < 0;
 
 private void IncreaseDayNumber()
 {
-SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET };
+Day newDay = new Day { Budget = DayManager.DAY_INITIAL_BUDGET };
 
 TotalDays.Add(newDay);
 CurrentDay = TotalDays.Last();
@@ -147,7 +154,7 @@ File.WriteAllText(SAVE_FILE_NAME, json);
 private void Load()
 {
 string json = File.ReadAllText(SAVE_FILE_NAME);
-TotalDays = JsonConvert.DeserializeObject<ObservableCollection<SpendingDay>>(json);
+TotalDays = JsonConvert.DeserializeObject<ObservableCollection<Day>>(json);
 CurrentDay = TotalDays.Last();
 
 UpdateCurrentBudget();
