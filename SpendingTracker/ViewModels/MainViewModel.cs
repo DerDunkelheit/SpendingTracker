@@ -52,7 +52,7 @@ namespace SpendingTracker.ViewModels
 
         if (useDummyDbData)
         {
-        td = DummyDb.GetCollectionFromDummyDb();
+        //td = DummyDb.GetCollectionFromDummyDb();
         }
         else
         td = Db.GetCollectionFromJsonFile<Day>();
@@ -62,14 +62,16 @@ namespace SpendingTracker.ViewModels
         Days.Add(new Day
         {
             Id = Days.Count + 1,
+            CarriedOverMoneyFromPreviousDay = 0,
             DailyBudget = DayManager.DAY_INITIAL_BUDGET,
+            AvailableMoney = 0,
             IsBudgetExceeded = false,
-            Transactions = new ObservableCollection<Transaction>() { new Transaction() { Amount = 30 } },
-        });
+            Transactions = new ObservableCollection<Transaction>(),
+        }) ;
         }
         else Days = td;
 
-       SelectedDay = Days[0];
+        SelectedDay = Days.Last() ;
 
         }
 
@@ -148,8 +150,8 @@ namespace SpendingTracker.ViewModels
 
         private void UpdateCurrentDayBudget(decimal valueToAdd)
         {
-        SelectedDay.DailyBudget += valueToAdd;
-        SelectedDay.IsBudgetExceeded = SelectedDay.DailyBudget < 0;
+        SelectedDay.AvailableMoney += valueToAdd;
+        SelectedDay.IsBudgetExceeded = SelectedDay.AvailableMoney < 0;
         }
 
         private void IncreaseDayNumber()

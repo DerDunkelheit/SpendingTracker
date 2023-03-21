@@ -9,7 +9,7 @@ namespace SpendingTracker;
 public partial class App : Application
 {
 
-    private bool isStuWindow = false;
+    private bool isStuWindow = true;
 
     public override void Initialize()
     {

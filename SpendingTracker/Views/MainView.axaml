@@ -61,24 +61,48 @@
 
 						<TextBlock Text="{Binding Days.Count}"></TextBlock>
 					</StackPanel>
-					<StackPanel Grid.Row="1" Orientation="Horizontal">
-						<TextBlock HorizontalAlignment="Center"
-                                   Margin="0, 0, 5, 0">Budget: </TextBlock>
+					<StackPanel Grid.Row="1" Orientation="Vertical">
+						<StackPanel  Orientation="Horizontal">
+							<TextBlock HorizontalAlignment="Center"
+									   Margin="0, 0, 5, 0">Carried Over Money: </TextBlock>
 
-						<TextBlock Text="{Binding SelectedDay.DailyBudget}"></TextBlock>
+							<TextBlock Text="{Binding SelectedDay.CarriedOverMoneyFromPreviousDay}"></TextBlock>
+						</StackPanel>
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Margin="0, 0, 5, 0" Text="Add Daily Budget: " />
+							<TextBlock Text="{Binding SelectedDay.DailyBudget}" />
+						</StackPanel>
+
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Margin="0, 0, 5, 0" Text="Original Available Money: "/>
+							<TextBlock Text="{Binding	SelectedDay.OriginalAvailableMoney}"/>
+						</StackPanel>
+
+						<StackPanel Orientation="Horizontal">
+							<TextBlock Margin="0, 0, 5, 0" Text="Available Money: "/>
+							<TextBlock Text="{Binding	SelectedDay.AvailableMoney}"/>
+						</StackPanel>
 					</StackPanel>
+					
 					<ScrollViewer Grid.Row="2" Margin="0, 12, 0, 12">
 						<ItemsControl Items="{Binding Days}">
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
 									<StackPanel Orientation="Vertical">
+										<TextBlock Text="{Binding Id}" />
 										<controls:ToggleLabelControl
-                                        IsElementChecked="{Binding !IsBudgetExceeded}"
-                                        LabelText="Left Budget: "
-                                        LabelSecondText="{Binding DailyBudget}"></controls:ToggleLabelControl>
+														  IsElementChecked="{Binding !IsBudgetExceeded}"
+														  LabelText="AvailableMoney "
+														  LabelSecondText="{Binding AvailableMoney}"></controls:ToggleLabelControl>
 										<TextBlock Text="Transactions" />
+										<ItemsControl Items="{Binding Transactions}">
+											<ItemsControl.ItemTemplate>
+												<DataTemplate>
+													<TextBlock Text="{Binding Amount}" />
+												</DataTemplate>
+											</ItemsControl.ItemTemplate>
+										</ItemsControl>
 									</StackPanel>
-									
 								</DataTemplate>
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>
