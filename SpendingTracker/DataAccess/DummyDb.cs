@@ -11,8 +11,14 @@ namespace SpendingTracker.DataAccess
 {
     public static class DummyDb
     {
-        public static ObservableCollection<Day> GetCollectionFromDummyDb()
+        /// <summary>
+        /// Method to return a collection of Days with one day and no transactions
+        /// </summary>
+        /// <returns>Collection of one day with just the settings for a first day</returns>
+        public static ObservableCollection<Day> GetFirstDayCollectionFromDummyDb()
         {
+
+        // Return a new collection of days with one day and just the settings for a first day
         return new ObservableCollection<Day>()
         {
             new Day()
