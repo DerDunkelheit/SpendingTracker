@@ -9,6 +9,8 @@
 	<Design.DataContext>
 		<vm:MainViewModel></vm:MainViewModel>
 	</Design.DataContext>
+
+
 	<Grid>
 		<Grid ColumnDefinitions="*, *" ShowGridLines="True">
 			<!-- Left Column -->
@@ -16,16 +18,21 @@
 				<Grid RowDefinitions="Auto, *, Auto" ShowGridLines="False">
 					<StackPanel Grid.Row="0">
 						<TextBox Text="{Binding SpendingTextBoxText, Mode=TwoWay}"
-								 
-                                 Name="SpendingTextBox"
-                                 Margin="0, 0, 0, 10"
-                                 Watermark="Enter Spending...">
-							
+								 Name="SpendingTextBox"
+								 Margin="0, 0, 0, 10"
+								 Watermark="Enter Spending...">
+							<TextBox.KeyBindings>
+								<KeyBinding Command="{Binding Path=AddSpendingCommand}" Gesture="Enter" />
+								<KeyBinding Command="{Binding Path=EraseSpendingText}" Gesture="Ctrl+D" />						
+							</TextBox.KeyBindings>
 						</TextBox>
+
+
 
 						<Button Content="Add Spending"
                                 Command="{Binding AddSpendingCommand}"
-                                HorizontalAlignment="Center"></Button>
+                                HorizontalAlignment="Center"
+								></Button>
 						<Button Content="Remove last Spending"
                                 Command="{Binding RemoveLastSpendingCommand}"
                                 HorizontalAlignment="Center"
@@ -86,7 +93,7 @@
 							<TextBlock Text="{Binding	SelectedDay.AvailableMoney}"/>
 						</StackPanel>
 					</StackPanel>
-					
+
 					<ScrollViewer Grid.Row="2" Margin="0, 12, 0, 12">
 						<ItemsControl Items="{Binding Days}">
 							<ItemsControl.ItemTemplate>

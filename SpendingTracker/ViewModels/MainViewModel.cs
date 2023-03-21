@@ -76,6 +76,12 @@ namespace SpendingTracker.ViewModels
         }
 
         [RelayCommand]
+        private void EraseSpendingText()
+        {
+        SpendingTextBoxText = string.Empty;
+        }
+
+        [RelayCommand]
         private void AddSpending()
         {
         if (decimal.TryParse(SpendingTextBoxText, out decimal spendingInput))
@@ -150,7 +156,7 @@ namespace SpendingTracker.ViewModels
 
         private void UpdateCurrentDayBudget(decimal valueToAdd)
         {
-        SelectedDay.AvailableMoney += valueToAdd;
+        //SelectedDay.AvailableMoney += valueToAdd;
         SelectedDay.IsBudgetExceeded = SelectedDay.AvailableMoney < 0;
         }
 
