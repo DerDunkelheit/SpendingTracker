@@ -21,13 +21,16 @@ public class Day
     public decimal CarriedOverMoneyFromPreviousDay
     {
         get => carriedOverMoneyFromPreviousDay;
+
         set
         {
         carriedOverMoneyFromPreviousDay = value;
+
+        // If we already have a dailyBudget value from today...
         if (dailyBudget != null)
         {
+        // Set the Original Available money for the day from the carried over plus the daily budget
         OriginalAvailableMoney = carriedOverMoneyFromPreviousDay + dailyBudget;
-
         }
         }
     }
@@ -39,28 +42,43 @@ public class Day
     public decimal DailyBudget
     {
         get => dailyBudget;
+
         set
         {
         dailyBudget = value;
+
+        // If we already have a Carried over money from the the previous day...
         if (carriedOverMoneyFromPreviousDay != null)
         {
+        // Set the Original Available money for the day from the carried over plus the daily budget
         OriginalAvailableMoney = carriedOverMoneyFromPreviousDay + dailyBudget;
-
         }
         }
     }
-    private decimal originalAvailableMoney;
 
-    public decimal OriginalAvailableMoney 
-    { 
+    /// <summary>
+    /// The Day's original available money to spend
+    /// </summary>
+    private decimal originalAvailableMoney;
+    public decimal OriginalAvailableMoney
+    {
         get => originalAvailableMoney;
         set
         {
         originalAvailableMoney = value;
-        AvailableMoney = value ;
+
+        // If the OriginalAvailableMoney is set (which happens only once)
+        // Set the AvailableMoney for the day without any Transaction Deductions
+        AvailableMoney = value;
         }
     }
 
+    /// <summary>
+    /// The Running total of available Money for the day including:
+    ///      The carried over money from the previous day plus
+    ///      The Daily Budget added on minus
+    ///      The Spending transactions for the day      
+    /// </summary>
     public decimal AvailableMoney { get; set; }
 
     /// <summary>
@@ -78,11 +96,16 @@ public class Day
         set
         {
         transactions = value;
+
+        // If we are setting transactions and there are more than one,
+        // update the Available Money for the day with the new spending transactions
         if (transactions.Count > 0)
         {
         AvailableMoney = originalAvailableMoney - transactions.Sum(x => x.Amount);
-
         }
+
+        // If there are no transactions then just set the AvailableMoney
+        // to the OriginalAvailableMoney
         else AvailableMoney = originalAvailableMoney;
         }
     }
