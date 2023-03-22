@@ -15,6 +15,7 @@ namespace SpendingTracker.ViewModels
 {
     public partial class MainViewModel : ViewModelBase
     {
+        // GitDummyComment
 
         #region Public Properties
 
