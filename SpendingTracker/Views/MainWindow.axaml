@@ -4,12 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:SpendingTracker.TemplatedControls"
+        xmlns:viewModels="clr-namespace:SpendingTracker.ViewModels"
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
         MinWidth="600" MinHeight="450"
         Width="600" Height="450"
         x:Class="SpendingTracker.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="SpendingTracker">
+        Title="SpendingTracker"
+        x:DataType="viewModels:MainWindowViewModel">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -67,20 +69,30 @@
                         
                         <TextBlock Text="{Binding TotalDays.Count}"></TextBlock>
                     </StackPanel>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal">
-                        <TextBlock HorizontalAlignment="Center" 
-                                   Margin="0, 0, 5, 0">Budget: </TextBlock>
-     
-                        <TextBlock Text="{Binding CurrentBudget}"></TextBlock>
+                    <StackPanel Grid.Row="1">
+                        <StackPanel Orientation="Horizontal"> <!-- TODO: maybe we can create templated control for text + binding value-->
+                            <TextBlock HorizontalAlignment="Center" 
+                                       Text="Budget:"
+                                       Margin="0, 0, 5, 0"></TextBlock>
+                            <TextBlock Text="{Binding CurrentBudget}"></TextBlock>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Daily increase value: "></TextBlock>
+                            <TextBlock Text="{Binding DayIncreaseValue}"></TextBlock>
+                        </StackPanel>
                     </StackPanel>
                     <ScrollViewer Grid.Row="2" Margin="0, 12, 0, 12">
                         <ItemsControl Items="{Binding TotalDays}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <controls:ToggleLabelControl 
-                                        IsElementChecked="{Binding !IsBudgetExceeded}"
-                                        LabelText="Left Budget: "
-                                        LabelSecondText="{Binding Budget}"></controls:ToggleLabelControl>
+                                    <StackPanel Orientation="Horizontal">
+                                        <controls:ToggleLabelControl 
+                                            IsElementChecked="{Binding !IsBudgetExceeded}"
+                                            LabelText="Left Budget: "
+                                            LabelSecondText="{Binding Budget}"></controls:ToggleLabelControl>
+                                        <TextBlock Text="{Binding Date, StringFormat={}{0:dd/MM/yyyy}}"
+                                                   VerticalAlignment="Center" Margin="5,1,0,0"></TextBlock>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>

@@ -1,10 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Newtonsoft.Json;
+using SpendingTracker.Interfaces;
 using SpendingTracker.Managers;
 using SpendingTracker.Models;
+using SpendingTracker.Utils;
 
 namespace SpendingTracker.ViewModels;
 
@@ -16,15 +18,17 @@ public partial class MainWindowViewModel : ViewModelBase
     private SpendingDay currentDay = new SpendingDay();
     [ObservableProperty]
     private float currentBudget = 0;
+    [ObservableProperty] 
+    private float dayIncreaseValue = DayManager.DAY_INITIAL_BUDGET;
     
     public ObservableCollection<SpendingDay> TotalDays { get; set; } = new ObservableCollection<SpendingDay>();
-    
-    private readonly string SAVE_FILE_NAME = "save.json";
+
+    public IView View { get; set; }
 
 
     public MainWindowViewModel()
     {
-        if (!File.Exists(SAVE_FILE_NAME))
+        if (!File.Exists(SaveLoadUtil.FULL_FILE_PATH))
         {
             IncreaseDayNumber();
         }
@@ -99,6 +103,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
         UpdateCurrentBudget();
 
+        if (View != null)
+        {
+            View.ClearTextBox();
+        }
+
         Save();
     }
 
@@ -110,7 +119,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void IncreaseDayNumber()
     {
-        SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET };
+        SpendingDay newDay = new SpendingDay { Budget = DayManager.DAY_INITIAL_BUDGET, Date = DateTime.Today};
 
         TotalDays.Add(newDay);
         CurrentDay = TotalDays.Last();
@@ -130,14 +139,12 @@ public partial class MainWindowViewModel : ViewModelBase
     
     private void Save()
     {
-        string json = JsonConvert.SerializeObject(TotalDays);
-        File.WriteAllText(SAVE_FILE_NAME, json);
+        SaveLoadUtil.SaveCollectionToJsonFile(TotalDays);
     }
     
     private void Load()
     {
-        string json = File.ReadAllText(SAVE_FILE_NAME);
-        TotalDays = JsonConvert.DeserializeObject<ObservableCollection<SpendingDay>>(json);
+        TotalDays = SaveLoadUtil.GetCollectionFromJsonFile<SpendingDay>();
         CurrentDay = TotalDays.Last();
 
         UpdateCurrentBudget();
